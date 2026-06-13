@@ -32,11 +32,11 @@ try {
   console.error('❌ Error al crear el pool de MySQL:', error.message);
 }
 
-app.get('/api/health', (req, res) => {
+app.get(['/api/health', '/health'], (req, res) => {
   res.json({ status: 'ok', message: 'API funcionando' });
 });
 
-app.get('/api/productos', async (req, res) => {
+app.get(['/api/productos', '/productos'], async (req, res) => {
   try {
     const [rows] = await pool.query('SELECT * FROM productos');
     const productos = rows.map(prod => ({
@@ -56,7 +56,7 @@ app.get('/api/productos', async (req, res) => {
 // --- SISTEMA DE AUTENTICACIÓN ---
 
 // REGISTRO
-app.post('/api/registro', async (req, res) => {
+app.post(['/api/registro', '/registro'], async (req, res) => {
   const { nombre, email, password } = req.body;
   if (!nombre || !email || !password) {
     return res.status(400).json({ error: 'Todos los campos son obligatorios' });
@@ -87,7 +87,7 @@ app.post('/api/registro', async (req, res) => {
 });
 
 // LOGIN
-app.post('/api/login', async (req, res) => {
+app.post(['/api/login', '/login'], async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
     return res.status(400).json({ error: 'Correo y contraseña requeridos' });
