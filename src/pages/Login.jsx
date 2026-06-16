@@ -12,8 +12,17 @@ function Login() {
   const { addToast } = useToast();
   const navigate = useNavigate();
 
+  const validateEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(String(email).toLowerCase());
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
+    if (!validateEmail(email)) {
+      setError('Por favor, ingresa un correo electrónico válido.');
+      return;
+    }
     setError(null);
     try {
       await login(email, password);

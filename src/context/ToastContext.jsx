@@ -1,15 +1,22 @@
-import { createContext, useState, useContext, useCallback } from 'react';
+import { createContext, useState, useContext, useCallback, useRef } from 'react';
 
 const ToastContext = createContext();
 
 export function ToastProvider({ children }) {
   const [toasts, setToasts] = useState([]);
+  const activeMessages = useRef(new Set());
 
   const addToast = useCallback((message, type = 'success') => {
-    const id = Date.now();
+    if (activeMessages.current.has(message)) return; // Evitar spam
+    
+    activeMessages.current.add(message);
+    const id = Date.now() + Math.random();
+    
     setToasts(prev => [...prev, { id, message, type }]);
+    
     setTimeout(() => {
       setToasts(prev => prev.filter(t => t.id !== id));
+      activeMessages.current.delete(message);
     }, 3000);
   }, []);
 

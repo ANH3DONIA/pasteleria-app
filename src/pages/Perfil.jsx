@@ -1,13 +1,30 @@
+import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link, Navigate } from 'react-router-dom';
 
-const pedidosSimulados = [
-  { id: 'PED-001', producto: 'Pastel de Chocolate Premium', fecha: '2026-05-20', estado: 'Entregado', total: 35.00 },
-  { id: 'PED-002', producto: 'Tarta de Frutas Frescas', fecha: '2026-06-01', estado: 'En preparación', total: 28.50 },
-];
-
 function Perfil() {
   const { user, logout } = useAuth();
+  const [pedidos, setPedidos] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (user) {
+      fetch(import.meta.env.VITE_API_URL + '/pedidos/mis-pedidos', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      })
+      .then(res => res.json())
+      .then(data => {
+        setPedidos(Array.isArray(data) ? data : []);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Error al obtener pedidos:", err);
+        setLoading(false);
+      });
+    }
+  }, [user]);
 
   if (!user) return <Navigate to="/login" replace />;
 
@@ -15,28 +32,34 @@ function Perfil() {
     <div className="page-inner">
       <div className="profile-header">
         <div>
-          <h1 className="page-title" style={{ marginBottom: '4px' }}>Hola, {user.name} 👋</h1>
+          <h1 className="page-title" style={{ marginBottom: '4px' }}>Hola, {user.nombre}</h1>
           <p className="page-subtitle" style={{ margin: 0 }}>Bienvenido a tu perfil de La Dulce Vida</p>
         </div>
         <button onClick={logout} className="btn-ghost">Cerrar Sesión</button>
       </div>
 
       <h2 className="section-title">Mis Pedidos</h2>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        {pedidosSimulados.map(pedido => (
-          <div key={pedido.id} className="order-row">
-            <span className="order-id">{pedido.id}</span>
-            <div>
-              <p className="order-name">{pedido.producto}</p>
-              <p className="order-date">{pedido.fecha}</p>
+      {loading ? (
+        <p>Cargando pedidos...</p>
+      ) : pedidos.length === 0 ? (
+        <p>Aún no tienes pedidos registrados.</p>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          {pedidos.map(pedido => (
+            <div key={pedido.id} className="order-row">
+              <span className="order-id">PED-{String(pedido.id).padStart(4, '0')}</span>
+              <div>
+                <p className="order-name">Pedido #{pedido.id}</p>
+                <p className="order-date">{new Date(pedido.fecha).toLocaleDateString()}</p>
+              </div>
+              <span className={`badge ${pedido.estado === 'entregado' ? 'badge--success' : 'badge--warning'}`} style={{textTransform: 'capitalize'}}>
+                {pedido.estado}
+              </span>
+              <span className="order-price">${Number(pedido.total).toFixed(2)}</span>
             </div>
-            <span className={`badge ${pedido.estado === 'Entregado' ? 'badge--success' : 'badge--warning'}`}>
-              {pedido.estado}
-            </span>
-            <span className="order-price">${pedido.total.toFixed(2)}</span>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       <div style={{ textAlign: 'center', marginTop: '40px' }}>
         <Link to="/catalogo" className="btn-primary">Hacer un Nuevo Pedido</Link>

@@ -51,13 +51,13 @@ function Navbar() {
         <Link to="/contacto" className="navbar-link" onClick={closeMenu}>Contacto</Link>
         <Link to="/carrito" className="navbar-link navbar-link--icon" onClick={closeMenu}>
           <ShoppingCart size={18} strokeWidth={1.75} />
-          Carrito
+          Mi Pedido
           {itemsCount > 0 && <span key={itemsCount} className="cart-badge">{itemsCount}</span>}
         </Link>
         {user ? (
           <Link to="/perfil" className="btn-primary btn-icon" style={{ backgroundColor: 'var(--color-accent)' }} onClick={closeMenu}>
             <User size={15} strokeWidth={2} />
-            {user.name}
+            {user.nombre}
           </Link>
         ) : (
           <Link to="/login" className="btn-primary" onClick={closeMenu}>Iniciar Sesión</Link>

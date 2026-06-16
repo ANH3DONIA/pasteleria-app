@@ -19,25 +19,36 @@ export function CartProvider({ children }) {
   }, [cart]);
 
   const addToCart = (product) => {
+    const existing = cart.find(item => String(item.id) === String(product.id));
+    if (existing && existing.quantity >= 10) {
+      return false; // No se puede añadir más
+    }
     setCart((prev) => {
-      const existing = prev.find(item => item.id === product.id);
-      if (existing) {
+      const prevExisting = prev.find(item => String(item.id) === String(product.id));
+      if (prevExisting) {
         return prev.map(item =>
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+          String(item.id) === String(product.id) ? { ...item, quantity: Math.min(10, item.quantity + 1) } : item
         );
       }
       return [...prev, { ...product, quantity: 1 }];
     });
+    return true; // Añadido con éxito
   };
 
   const removeFromCart = (productId) => {
-    setCart((prev) => prev.filter(item => item.id !== productId));
+    setCart((prev) => prev.filter(item => String(item.id) !== String(productId)));
   };
 
   const updateQuantity = (productId, delta) => {
     setCart((prev) =>
       prev
-        .map(item => item.id === productId ? { ...item, quantity: item.quantity + delta } : item)
+        .map(item => {
+          if (String(item.id) === String(productId)) {
+            const newQuantity = Math.max(0, Math.min(10, item.quantity + delta));
+            return { ...item, quantity: newQuantity };
+          }
+          return item;
+        })
         .filter(item => item.quantity > 0)
     );
   };

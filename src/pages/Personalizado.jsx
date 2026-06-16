@@ -53,15 +53,20 @@ function Personalizado() {
           </div>
           <div className="form-group">
             <label className="form-label">Sabor del Pan</label>
-            <input name="sabor" type="text" placeholder="Ej. Vainilla, Red Velvet, Limón..." required className="form-input" value={formData.sabor} onChange={handleChange} />
+            <input name="sabor" type="text" placeholder="Ej. Vainilla, Red Velvet, Limón..." required className="form-input" maxLength="50" value={formData.sabor} onChange={handleChange} />
           </div>
           <div className="form-group">
             <label className="form-label">Sabor del Relleno</label>
-            <input name="relleno" type="text" placeholder="Ej. Crema de fresas, Nutella, Dulce de leche..." required className="form-input" value={formData.relleno} onChange={handleChange} />
+            <input name="relleno" type="text" placeholder="Ej. Crema de fresas, Nutella, Dulce de leche..." required className="form-input" maxLength="50" value={formData.relleno} onChange={handleChange} />
           </div>
           <div className="form-group">
-            <label className="form-label">Temática o Descripción</label>
-            <textarea name="tema" rows="4" placeholder="Describe colores, flores o temática especial." required className="form-input" style={{ resize: 'vertical' }} value={formData.tema} onChange={handleChange} />
+            <label className="form-label" style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span>Temática o Descripción</span>
+              <span style={{ fontSize: '0.8rem', color: formData.tema.length > 250 ? 'red' : 'var(--color-text-light)' }}>
+                {formData.tema.length}/300
+              </span>
+            </label>
+            <textarea name="tema" rows="4" maxLength="300" placeholder="Describe colores, flores o temática especial." required className="form-input" style={{ resize: 'vertical' }} value={formData.tema} onChange={handleChange} />
           </div>
           <button type="submit" className="btn-primary btn-icon" style={{ width: '100%', padding: '13px', justifyContent: 'center' }}>
             Ver Resumen <ChevronRight size={16} />

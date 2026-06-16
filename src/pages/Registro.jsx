@@ -13,14 +13,21 @@ function Registro() {
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
+  const validateEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(String(email).toLowerCase());
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validateEmail(formData.email)) {
+      setError('Por favor, ingresa un correo electrónico válido.');
+      return;
+    }
     setError(null);
     try {
-      // 1. Registramos al usuario en la API
       await register(formData.nombre, formData.email, formData.password);
       
-      // 2. Si es exitoso, iniciamos sesión automáticamente
       await login(formData.email, formData.password);
       
       addToast('¡Cuenta creada con éxito!');
@@ -50,9 +57,26 @@ function Registro() {
         </div>
         <div className="form-group">
           <label className="form-label">Contraseña</label>
-          <input name="password" type="password" placeholder="Mínimo 6 caracteres" required minLength="6" value={formData.password} onChange={handleChange} className="form-input" />
+          <input 
+            name="password" 
+            type="password" 
+            placeholder="Mínimo 6 caracteres" 
+            required 
+            minLength="6" 
+            value={formData.password} 
+            onChange={handleChange} 
+            className="form-input" 
+          />
+          {formData.password.length > 0 && (
+            <div style={{ marginTop: '8px', fontSize: '0.8rem', display: 'flex', gap: '4px', alignItems: 'center' }}>
+              <div style={{ flex: 1, height: '4px', backgroundColor: formData.password.length < 6 ? 'red' : formData.password.match(/[A-Z]/) && formData.password.match(/[0-9]/) ? 'green' : 'orange', borderRadius: '2px' }}></div>
+              <span style={{ color: 'var(--color-text-light)' }}>
+                {formData.password.length < 6 ? 'Muy corta' : formData.password.match(/[A-Z]/) && formData.password.match(/[0-9]/) ? 'Fuerte' : 'Media'}
+              </span>
+            </div>
+          )}
         </div>
-        <button type="submit" className="btn-primary" style={{ width: '100%', padding: '13px' }}>
+        <button type="submit" className="btn-primary" style={{ width: '100%', padding: '13px' }} disabled={formData.password.length > 0 && formData.password.length < 6}>
           Crear mi Cuenta
         </button>
         <p style={{ textAlign: 'center', margin: '15px 0 0', fontSize: '0.9rem', color: 'var(--color-text-light)' }}>

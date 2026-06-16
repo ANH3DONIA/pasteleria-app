@@ -6,7 +6,6 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Check token on load
   useEffect(() => {
     try {
       const token = localStorage.getItem('token');
@@ -30,13 +29,14 @@ export function AuthProvider({ children }) {
       body: JSON.stringify({ email, password })
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Error al iniciar sesión');
+    if (!res.ok) throw new Error(data.mensaje || data.error || 'Error al iniciar sesión');
     
-    // Guardar en sesión
+    const userData = data.usuario || data.user;
+    
     localStorage.setItem('token', data.token);
-    localStorage.setItem('user', JSON.stringify(data.user));
-    setUser(data.user);
-    return data.user;
+    localStorage.setItem('user', JSON.stringify(userData));
+    setUser(userData);
+    return userData;
   };
 
   const register = async (nombre, email, password) => {
@@ -46,7 +46,7 @@ export function AuthProvider({ children }) {
       body: JSON.stringify({ nombre, email, password })
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Error al registrar');
+    if (!res.ok) throw new Error(data.mensaje || 'Error al registrar');
     return data;
   };
 

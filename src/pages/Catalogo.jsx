@@ -47,8 +47,12 @@ function Catalogo() {
     });
 
   const handleAddToCart = (producto) => {
-    addToCart(producto);
-    addToast(`${producto.name} añadido al carrito`);
+    const success = addToCart(producto);
+    if (success) {
+      addToast(`${producto.name} agregado a tu pedido`);
+    } else {
+      addToast(`Solo puedes pedir hasta 10 unidades de ${producto.name}`, 'warning');
+    }
   };
 
   return (
@@ -116,7 +120,7 @@ function Catalogo() {
                   ${producto.price.toFixed(2)}
                 </p>
                 <button onClick={() => handleAddToCart(producto)} className="btn-primary" style={{ width: '100%' }}>
-                  Añadir al Carrito
+                  Agregar a mi Pedido
                 </button>
               </div>
             </div>

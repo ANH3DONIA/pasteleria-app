@@ -25,3 +25,7 @@ dist-ssr
 
 # Entornos
 .env*
+
+# Archivos excluidos a petición
+esquema.sql
+DOCUMENTACION.md
